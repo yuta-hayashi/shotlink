@@ -1,5 +1,5 @@
 export default defineBackground(() => {
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     getScreenShot().then((image) => {
       sendResponse({ action: 'getScreenShot', image });
     });
