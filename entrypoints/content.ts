@@ -21,9 +21,19 @@ async function selectArea(senderId?: string) {
       z-index: 10000 !important;
       backgroud-color: none !important;
       `
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      z-index: 9999 !important;
+      user-select: none !important;
+      cursor: crosshair !important;
+      `
+  document.body.appendChild(overlay);
   document.body.appendChild(selectionBox);
-  document.body.style.userSelect = 'none';
-  document.body.style.cursor = 'crosshair';
 
   let startX = 0;
   let startY = 0;
@@ -66,6 +76,9 @@ async function selectArea(senderId?: string) {
       }
       selectionBox.style.display = 'none';
 
+      // wait for selection box is hidden
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
       browser.runtime.sendMessage(senderId, { action: 'getScreenShot' }, async (response) => {
         const croppedDataUrl = await cropImage(response.image, area);
         const imageBlob = dataUriToBlob(croppedDataUrl);
@@ -80,8 +93,8 @@ async function selectArea(senderId?: string) {
       document.removeEventListener('mousedown', handleMouseDown);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
-      document.body.style.userSelect = 'auto';
-      document.body.style.cursor = 'auto';
+      selectionBox.remove();
+      overlay.remove();
     }
   }
 
