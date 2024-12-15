@@ -96,15 +96,17 @@ async function cropImage(dataUrl: string, area: { x: number, y: number, width: n
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = area.width;
-      canvas.height = area.height;
       const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
 
+      canvas.width = area.width * dpr;
+      canvas.height = area.height * dpr;
       if (!ctx) {
         reject(new Error('Canvas context could not be created'));
         return;
       }
-      ctx.drawImage(img, area.x, area.y, area.width, area.height, 0, 0, area.width, area.height);
+
+      ctx.drawImage(img, area.x * dpr, area.y * dpr, area.width * dpr, area.height * dpr, 0, 0, area.width * dpr, area.height * dpr);
       resolve(canvas.toDataURL());
     };
 
